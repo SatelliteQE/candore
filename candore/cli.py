@@ -54,6 +54,7 @@ def extract(ctx, mode, output, full):
 @candore.command(help="Compare pre and post upgrade data")
 @click.option("--pre", type=str, help="The pre upgrade json file")
 @click.option("--post", type=str, help="The post upgrade json file")
+@click.option("-i", "--inverse", is_flag=True, help="Inverse comparison, shows whats not changed")
 @click.option("-o", "--output", type=str, help="The output file name")
 @click.option(
     "-t",
@@ -64,11 +65,12 @@ def extract(ctx, mode, output, full):
 )
 @click.option("--record-evs", is_flag=True, help="Record Expected Variations in reporting")
 @click.pass_context
-def compare(ctx, pre, post, output, report_type, record_evs):
+def compare(ctx, pre, post, inverse, output, report_type, record_evs):
     candore_obj = ctx.parent.candore
     candore_obj.compare_entities(
         pre_file=pre,
         post_file=post,
+        inverse=inverse,
         output=output,
         report_type=report_type,
         record_evs=record_evs,
