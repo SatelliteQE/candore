@@ -1,18 +1,23 @@
 import json
 
-from candore.modules.variatons import Variations
+from candore.modules.variations import Variations, Constants
 from candore.utils import last_index_of_element, is_list_contains_dict
 
 
 class Comparator:
     def __init__(self, settings):
         self.big_key = []
-        self.big_compare = {}
+        self.big_diff = {}
         self.big_constant = {}
         self.record_evs = False
         self.variations = Variations(settings)
+        self.constants = Constants(settings)
         self.expected_variations = self.variations.expected_variations
         self.skipped_variations = self.variations.skipped_variations
+        self.expected_constants = self.constants.expected_constants
+        self.skipped_constants = self.constants.skipped_constants
+
+
 
     def remove_verifed_key(self, key):
         reversed_bk = self.big_key[::-1]
@@ -37,20 +42,32 @@ class Comparator:
                     "post": post,
                     "variation": var_details or "Expected(A)",
                 }
-                self.big_compare.update({full_path: variation})
+                self.big_diff.update({full_path: variation})
         elif (
             var_full_path not in self.expected_variations
             and var_full_path not in self.skipped_variations
         ):
             variation = {"pre": pre, "post": post, "variation": var_details or ""}
-            self.big_compare.update({full_path: variation})
+            self.big_diff.update({full_path: variation})
 
-    def record_constants(self, pre, post):
+    def record_constants(self, pre, post, var_details=None):
         big_key = [str(itm) for itm in self.big_key]
         full_path = "/".join(big_key)
-        # var_full_path = "/".join([itm for itm in self.big_key if not isinstance(itm, int)])
-        variation = {"pre": pre, "post": post}
-        self.big_constant.update({full_path: variation})
+        var_full_path = "/".join([itm for itm in self.big_key if not isinstance(itm, int)])
+        if var_full_path in self.expected_constants or var_full_path in self.skipped_constants:
+            if self.record_evs:
+                variation = {
+                    "pre": pre,
+                    "post": post,
+                    "constant": var_details or "Expected(A)",
+                }
+                self.big_constant.update({full_path: variation})
+        elif (
+            var_full_path not in self.expected_constants
+            and var_full_path not in self.skipped_constants
+        ):
+            variation = {"pre": pre, "post": post, "constant": var_details or ""}
+            self.big_constant.update({full_path: variation})
 
     def _is_data_type_dict(self, pre, post, unique_key=""):
         if (pre and 'id' in pre) and (post and 'id' in post):
@@ -118,7 +135,7 @@ class Comparator:
             if pre_data != post_data:
                 self.record_variation(pre_data, post_data, var_details)
             else:
-                self.record_constants(pre_data, post_data)
+                self.record_constants(pre_data, post_data, var_details)
             self.remove_verifed_key(unique_key)
 
     def compare_json(self, pre_file, post_file, inverse):
@@ -132,6 +149,6 @@ class Comparator:
 
         self.compare_all_pres_with_posts(pre_data, post_data)
         if not inverse:
-            return self.big_compare
+            return self.big_diff
         else:
             return self.big_constant

@@ -84,6 +84,8 @@ class Reporting:
         csv_writer.writerow(columns)
         # Writing Rows
         for var_path, vals in self.results.items():
-            csv_writer.writerow([var_path, vals["pre"], vals["post"], vals.get('variation', None)])
+            csv_writer.writerow([
+                var_path, vals["pre"], vals["post"],
+                vals["variation" if not inverse else "constant"]])
         print("Wrote CSV report to {}".format(output_file))
         print("CSV report contains {} results".format(len(self.results)))
