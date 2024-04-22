@@ -113,7 +113,7 @@ class Comparator:
     def _is_data_type_list(self, pre, post, unique_key=""):
 
         def custom_key(elem):
-            return 'None' if elem is None else elem
+            return 'None' if elem is None else str(elem)
 
         if not is_list_contains_dict(pre):
             if sorted(pre, key=custom_key) != sorted(post, key=custom_key):
