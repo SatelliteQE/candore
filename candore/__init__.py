@@ -50,6 +50,7 @@ class Candore:
         self,
         pre_file=None,
         post_file=None,
+        inverse=None,
         output=None,
         report_type=None,
         record_evs=None,
@@ -57,9 +58,9 @@ class Candore:
         comp = Comparator(settings=self.settings)
         if record_evs:
             comp.record_evs = True
-        results = comp.compare_json(pre_file=pre_file, post_file=post_file)
+        results = comp.compare_json(pre_file=pre_file, post_file=post_file, inverse=inverse)
         reporter = Reporting(results=results)
-        reporter.generate_report(output_file=output, output_type=report_type)
+        reporter.generate_report(output_file=output, output_type=report_type, inverse=inverse)
 
     def find_path(self, path, json_file, delimiter):
         finder = Finder()

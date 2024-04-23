@@ -1,0 +1,10 @@
+expected_variations:
+  # These are just examples, please replace these with some real expected variations
+  hosts:
+    content_facet_somevar: content_source_ssomevar_id
+
+skipped_variations:
+  # These are just examples, please replace these with some real skip-able variations
+  content_view_versions:
+    environments:
+      permissions_somevar: somevar_here

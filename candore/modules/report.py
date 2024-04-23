@@ -17,12 +17,13 @@ class Reporting:
         """
         self.results = results
 
-    def generate_report(self, output_file, output_type):
+    def generate_report(self, output_file, output_type, inverse):
         """Generate a report of the compared results
 
         Args:
             output_file (str): The file to write the report to
             output_type (str): The type of report to generate json / CSV
+            inverse (bool): Shows what not changed in comparison results
         Returns:
             None
         Raises:
@@ -31,9 +32,9 @@ class Reporting:
         if output_type == "json":
             self._generate_json_report(output_file)
         elif output_type == "html":
-            self._generate_html_report()
+            print('The HTML reporting is not implemented yet! Try next time!')
         elif output_type == "csv":
-            self._generate_csv_report(output_file)
+            self._generate_csv_report(output_file, inverse=inverse)
         else:
             raise ValueError("Output type {} not supported".format(output_type))
 
@@ -65,7 +66,7 @@ class Reporting:
         # render_webpage()
         print("HTML report is ready to view at: http://localhost:5000")
 
-    def _generate_csv_report(self, output_file):
+    def _generate_csv_report(self, output_file, inverse):
         """Generate a CSV report of the compared results
 
         Args:
@@ -78,8 +79,13 @@ class Reporting:
         output_file = Path(output_file)
         # Convert json to csv and write to output file
         csv_writer = csv.writer(output_file.open("w"))
-        csv_writer.writerow(["Variation Path", "Pre-Upgrade", "Post-Upgrade", "Variation"])
+        # Table Column Names
+        columns = ["Path", "Pre-Upgrade", "Post-Upgrade", "Variation?" if not inverse else 'Constant?']
+        csv_writer.writerow(columns)
+        # Writing Rows
         for var_path, vals in self.results.items():
-            csv_writer.writerow([var_path, vals["pre"], vals["post"], vals["variation"]])
+            csv_writer.writerow([
+                var_path, vals["pre"], vals["post"],
+                vals["variation" if not inverse else "constant"]])
         print("Wrote CSV report to {}".format(output_file))
         print("CSV report contains {} results".format(len(self.results)))

@@ -1,0 +1,10 @@
+expected_constants:
+  # These are just examples, please replace these with some real expected constants
+  hosts:
+    content_facet_something: content_source_something_id
+
+skipped_constants:
+  # These are just examples, please replace these with some real skip-able constants
+  content_view_versions:
+    environments:
+      permissions_something: something here
