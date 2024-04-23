@@ -1,0 +1,27 @@
+# Catalog entry for Backstage [backstage.io]
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: candore
+  title: Candore
+  description: A tool to ensure data persistence in product post change
+  links:
+    - title: pypi
+      url: https://pypi.org/project/candore
+    - title: code
+      url: https://github.com/SatelliteQE/candore
+      icon: github
+  tags:
+    - python
+    - click
+    - test-reporting
+    - data-persistence
+    - continuous-integration
+  namespace: quality-community
+  annotations:
+    github.com/project-slug: SatelliteQE/candore
+    feedback/email-to: 'jyejare@redhat.com'
+spec:
+  owner: group:redhat/satellite-qe
+  lifecycle: production
+  domain: quality-community/quality-community
