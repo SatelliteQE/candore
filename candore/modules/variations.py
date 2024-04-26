@@ -5,8 +5,6 @@ A module responsible for calculating expected and skipped variations from
 from functools import cached_property
 from candore.utils import yaml_reader, get_yaml_paths
 
-import yaml
-
 
 class Variations:
     def __init__(self, settings):
@@ -14,16 +12,19 @@ class Variations:
 
     @cached_property
     def variations(self):
-        yaml_data = yaml_reader(file_path=self.settings.candore.var_file)
+        yaml_data = yaml_reader(file_path=getattr(self.settings.candore, "var_file", None))
         return yaml_data
 
     @cached_property
     def expected_variations(self):
-        return get_yaml_paths(yaml_data=self.variations.get("expected_variations"))
+        yaml_data = self.variations.get("expected_variations") if self.variations else None
+        return get_yaml_paths(yaml_data=yaml_data)
+
 
     @cached_property
     def skipped_variations(self):
-        return get_yaml_paths(yaml_data=self.variations.get("skipped_variations"))
+        yaml_data = self.variations.get("skipped_variations") if self.variations else None
+        return get_yaml_paths(yaml_data=yaml_data)
 
 
 class Constants:
@@ -32,13 +33,15 @@ class Constants:
 
     @cached_property
     def constants(self):
-        yaml_data = yaml_reader(file_path=self.settings.candore.constant_file)
+        yaml_data = yaml_reader(file_path=getattr(self.settings.candore, "constant_file", None))
         return yaml_data
 
     @cached_property
     def expected_constants(self):
-        return get_yaml_paths(yaml_data=self.constants.get("expected_constants"))
+        yaml_data = self.constants.get("expected_constants") if self.constants else None
+        return get_yaml_paths(yaml_data=yaml_data)
 
     @cached_property
     def skipped_constants(self):
-        return get_yaml_paths(yaml_data=self.constants.get("skipped_constants"))
+        yaml_data = self.constants.get("skipped_constants") if self.constants else None
+        return get_yaml_paths(yaml_data=yaml_data)
