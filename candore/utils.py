@@ -18,9 +18,12 @@ def is_list_contains_dict(_list):
 
 
 def yaml_reader(file_path=None):
+    if not file_path:
+        return None
     templates_path = Path(file_path)
     if not templates_path.exists():
-        print(f"The file {templates_path} does not exist.")
+        print(f"Warning! The file {templates_path} does not exist.")
+        return None
     with templates_path.open() as yaml_file:
         yaml_data = yaml.safe_load(yaml_file)
     return yaml_data
@@ -28,12 +31,13 @@ def yaml_reader(file_path=None):
 
 def get_yaml_paths(yaml_data, prefix="", separator="/"):
     paths = []
-    if isinstance(yaml_data, dict):
-        for key, value in yaml_data.items():
-            paths.extend(get_yaml_paths(value, f"{prefix}{key}{separator}"))
-    elif isinstance(yaml_data, list):
-        for item in yaml_data:
-            paths.extend(get_yaml_paths(item, prefix, separator))
-    else:
-        paths.append(f"{prefix}{yaml_data}")
+    if yaml_data:
+        if isinstance(yaml_data, dict):
+            for key, value in yaml_data.items():
+                paths.extend(get_yaml_paths(value, f"{prefix}{key}{separator}"))
+        elif isinstance(yaml_data, list):
+            for item in yaml_data:
+                paths.extend(get_yaml_paths(item, prefix, separator))
+        else:
+            paths.append(f"{prefix}{yaml_data}")
     return paths

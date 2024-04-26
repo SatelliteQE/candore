@@ -12,12 +12,6 @@ class Comparator:
         self.record_evs = False
         self.variations = Variations(settings)
         self.constants = Constants(settings)
-        self.expected_variations = self.variations.expected_variations
-        self.skipped_variations = self.variations.skipped_variations
-        self.expected_constants = self.constants.expected_constants
-        self.skipped_constants = self.constants.skipped_constants
-
-
 
     def remove_verifed_key(self, key):
         reversed_bk = self.big_key[::-1]
@@ -35,7 +29,7 @@ class Comparator:
         big_key = [str(itm) for itm in self.big_key]
         full_path = "/".join(big_key)
         var_full_path = "/".join([itm for itm in self.big_key if not isinstance(itm, int)])
-        if var_full_path in self.expected_variations or var_full_path in self.skipped_variations:
+        if var_full_path in self.variations.expected_variations or var_full_path in self.variations.skipped_variations:
             if self.record_evs:
                 variation = {
                     "pre": pre,
@@ -44,8 +38,8 @@ class Comparator:
                 }
                 self.big_diff.update({full_path: variation})
         elif (
-            var_full_path not in self.expected_variations
-            and var_full_path not in self.skipped_variations
+            var_full_path not in self.variations.expected_variations
+            and var_full_path not in self.variations.skipped_variations
         ):
             variation = {"pre": pre, "post": post, "variation": var_details or ""}
             self.big_diff.update({full_path: variation})
@@ -54,7 +48,7 @@ class Comparator:
         big_key = [str(itm) for itm in self.big_key]
         full_path = "/".join(big_key)
         var_full_path = "/".join([itm for itm in self.big_key if not isinstance(itm, int)])
-        if var_full_path in self.expected_constants or var_full_path in self.skipped_constants:
+        if var_full_path in self.constants.expected_constants or var_full_path in self.constants.skipped_constants:
             if self.record_evs:
                 variation = {
                     "pre": pre,
@@ -63,8 +57,8 @@ class Comparator:
                 }
                 self.big_constant.update({full_path: variation})
         elif (
-            var_full_path not in self.expected_constants
-            and var_full_path not in self.skipped_constants
+            var_full_path not in self.constants.expected_constants
+            and var_full_path not in self.constants.skipped_constants
         ):
             variation = {"pre": pre, "post": post, "constant": var_details or ""}
             self.big_constant.update({full_path: variation})
