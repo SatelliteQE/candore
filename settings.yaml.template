@@ -8,3 +8,5 @@ candore:
   parser: apipie
   var_file: "@jinja {{this.candore.product_version | replace('.', '_')}}_variations.yaml"
   constant_File: "@jinja {{this.candore.product_version | replace('.', '_')}}_constants.yaml"
+  # The maximum number of concurrent (asynchronous) connections allowed against the host
+  max_connections: 20

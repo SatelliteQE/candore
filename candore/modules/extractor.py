@@ -3,6 +3,10 @@ from functools import cached_property
 
 import aiohttp
 
+# Max observed request duration in testing was approximately 888 seconds
+# so we set the timeout to 2000 seconds to be overly safe
+EXTENDED_TIMEOUT = aiohttp.ClientTimeout(total=2000, connect=60, sock_read=2000, sock_connect=60)
+
 
 class Extractor:
     def __init__(self, settings, apilister=None):
@@ -20,6 +24,7 @@ class Extractor:
         self.client = None
         self.apilister = apilister
         self.full = False
+        self.semaphore = asyncio.Semaphore(self.settings.candore.max_connections)
 
     @cached_property
     def dependent_components(self):
@@ -51,11 +56,25 @@ class Extractor:
         await self._end_session()
 
     async def paged_results(self, **get_params):
-        async with self.client.get(**get_params) as response:
+        async with self.client.get(**get_params, timeout=EXTENDED_TIMEOUT) as response:
             if response.status == 200:
                 _paged_results = await response.json()
                 _paged_results = _paged_results.get("results")
                 return _paged_results
+
+    async def fetch_page(self, page, _request):
+        async with self.semaphore:
+            _request["params"].update({"page": page})
+            page_entities = await self.paged_results(**_request)
+            return page_entities
+
+    async def fetch_all_pages(self, total_pages, _request):
+        tasks = []
+        for page in range(2, total_pages + 1):
+            task = asyncio.ensure_future(self.fetch_page(page, _request))
+            tasks.append(task)
+        responses = await asyncio.gather(*tasks)
+        return responses or []
 
     async def fetch_component_entities(self, **comp_params):
         entity_data = []
@@ -69,8 +88,7 @@ class Extractor:
             if response.status == 200:
                 results = await response.json()
                 if "results" in results:
-                    entities = results.get("results")
-                    entity_data.extend(entities)
+                    entity_data.extend(results.get("results"))
                 else:
                     # Return an empty directory for endpoints
                     # like services, api etc
@@ -82,14 +100,11 @@ class Extractor:
         if self.full:
             total_pages = results.get("total") // results.get("per_page") + 1
             if total_pages > 1:
-                print(
-                    f"Endpoint {endpoint} has {total_pages} pages. "
-                    "This would take some time ...."
-                )
-                for page in range(2, total_pages + 1):
-                    _request["params"].update({"page": page})
-                    page_entities = await self.paged_results(**_request)
-                    entity_data.extend(page_entities)
+                print(f"Endpoint {endpoint} has {total_pages} pages.")
+                pages_data = await self.fetch_all_pages(total_pages, _request)
+                for page_entities in pages_data:
+                    if page_entities:
+                        entity_data.extend(page_entities)
         return entity_data
 
     async def dependency_ids(self, dependency):
