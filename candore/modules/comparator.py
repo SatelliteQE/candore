@@ -101,12 +101,16 @@ class Comparator:
                         self.compare_all_pres_with_posts(
                             pre_entity, post_entity, unique_key=pre_entity["id"]
                         )
+                        post.remove(post_entity)
+                        break
                 else:
                     key = list(pre_entity.keys())[0]
                     if pre_entity[key] == post_entity.get(key):
                         self.compare_all_pres_with_posts(
                             pre_entity[key], post_entity[key], unique_key=key
                         )
+                        del post_entity[key]
+                        break
             if "id" in pre_entity:
                 self.remove_path(pre_entity["id"])
             else:
