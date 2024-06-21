@@ -44,11 +44,21 @@ def apis(ctx):
 @click.option("--mode", type=str, help="The mode must be 'pre' or 'post'")
 @click.option("-o", "--output", type=str, help="The output file name")
 @click.option("--full", is_flag=True, help="Extract data from all the pages of a component")
+@click.option("--max-pages", type=int, help="The maximum number of pages to extract per entity")
+@click.option("--skip-percent", type=int, help="The percentage of pages to skip per entity")
 @click.pass_context
-def extract(ctx, mode, output, full):
+def extract(ctx, mode, output, full, max_pages, skip_percent):
     loop = asyncio.get_event_loop()
     candore_obj = ctx.parent.candore
-    loop.run_until_complete(candore_obj.save_all_entities(mode=mode, output_file=output, full=full))
+    loop.run_until_complete(
+        candore_obj.save_all_entities(
+            mode=mode,
+            output_file=output,
+            full=full,
+            max_pages=max_pages,
+            skip_percent=skip_percent,
+        )
+    )
 
 
 @candore.command(help="Compare pre and post upgrade data")
@@ -86,9 +96,11 @@ def compare(ctx, pre, post, inverse, output, report_type, record_evs):
     "e.g entity/5/description",
 )
 @click.option(
-    "--data-file", type=str, help="The data file from which to search the data on a given path"
+    "--data-file",
+    type=str,
+    help="The data file from which to search the data on a given path",
 )
-@click.option("--delimiter", type=str, default='/', help="Settings file path. Default is '/'")
+@click.option("--delimiter", type=str, default="/", help="Settings file path. Default is '/'")
 @click.pass_context
 def reader(ctx, path, data_file, delimiter):
     candore_obj = ctx.parent.candore

@@ -1,7 +1,9 @@
 import json
 
-from candore.modules.variations import Variations, Constants
-from candore.utils import last_index_of_element, is_list_contains_dict
+from candore.modules.variations import Constants
+from candore.modules.variations import Variations
+from candore.utils import is_list_contains_dict
+from candore.utils import last_index_of_element
 
 
 class Comparator:
@@ -29,7 +31,10 @@ class Comparator:
         big_key = [str(itm) for itm in self.big_key]
         full_path = "/".join(big_key)
         var_full_path = "/".join([itm for itm in self.big_key if not isinstance(itm, int)])
-        if var_full_path in self.variations.expected_variations or var_full_path in self.variations.skipped_variations:
+        if (
+            var_full_path in self.variations.expected_variations
+            or var_full_path in self.variations.skipped_variations
+        ):
             if self.record_evs:
                 variation = {
                     "pre": pre,
@@ -48,7 +53,10 @@ class Comparator:
         big_key = [str(itm) for itm in self.big_key]
         full_path = "/".join(big_key)
         var_full_path = "/".join([itm for itm in self.big_key if not isinstance(itm, int)])
-        if var_full_path in self.constants.expected_constants or var_full_path in self.constants.skipped_constants:
+        if (
+            var_full_path in self.constants.expected_constants
+            or var_full_path in self.constants.skipped_constants
+        ):
             if self.record_evs:
                 variation = {
                     "pre": pre,
@@ -95,7 +103,7 @@ class Comparator:
                         )
                 else:
                     key = list(pre_entity.keys())[0]
-                    if pre_entity[key] == post_entity[key]:
+                    if pre_entity[key] == post_entity.get(key):
                         self.compare_all_pres_with_posts(
                             pre_entity[key], post_entity[key], unique_key=key
                         )
@@ -105,7 +113,6 @@ class Comparator:
                 self.remove_path(pre_entity[list(pre_entity.keys())[0]])
 
     def _is_data_type_list(self, pre, post, unique_key=""):
-
         def custom_key(elem):
             return 'None' if elem is None else str(elem)
 
@@ -121,9 +128,9 @@ class Comparator:
     def compare_all_pres_with_posts(self, pre_data, post_data, unique_key="", var_details=None):
         if unique_key:
             self.big_key.append(unique_key)
-        if type(pre_data) is dict:
+        if isinstance(pre_data, dict):
             self._is_data_type_dict(pre_data, post_data, unique_key=unique_key)
-        elif type(pre_data) is list:
+        elif isinstance(pre_data, list):
             self._is_data_type_list(pre_data, post_data, unique_key=unique_key)
         else:
             if pre_data != post_data:
