@@ -1,7 +1,8 @@
 import asyncio  # noqa: F401
 import math
 from functools import cached_property
-
+from candore.modules.ssh import Session
+import re
 import aiohttp
 
 # Max observed request duration in testing was approximately 888 seconds
@@ -188,3 +189,15 @@ class Extractor:
                 comp_entities = await self.process_entities(endpoints=endpoints)
                 all_data[component] = comp_entities
         return all_data
+
+    async def extract_all_rpms(self):
+        """Extracts all installed RPMs from server"""
+        with Session() as ssh_client:
+            rpms = ssh_client.execute('rpm -qa').stdout
+            rpms = rpms.splitlines()
+            name_version_pattern = rf'{self.settings.rpms.regex_pattern}'
+            rpms_matches = [
+                re.compile(name_version_pattern).match(rpm) for rpm in rpms
+            ]
+            rpms_list = [rpm_match.groups()[:-1] for rpm_match in rpms_matches if rpm_match]
+            return dict(rpms_list)

@@ -46,6 +46,7 @@ dependencies = [
     "flask",
     "requests",
     "PyYAML",
+    "hussh",
 ]
 
 [project.optional-dependencies]

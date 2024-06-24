@@ -23,6 +23,7 @@ def candore_settings(option_settings_file=None, option_components_file=None):
         core_loaders=["YAML"],
         envvar_prefix="CANDORE",
         settings_files=[settings_file, components_file],
+        preload=["conf/*.yaml"],
         envless_mode=True,
         lowercase_read=True,
     )

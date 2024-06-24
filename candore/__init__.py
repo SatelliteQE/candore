@@ -11,6 +11,7 @@ from candore.modules.comparator import Comparator
 from candore.modules.extractor import Extractor
 from candore.modules.finder import Finder
 from candore.modules.report import Reporting
+from candore.config import candore_settings
 
 
 class Candore:
@@ -39,6 +40,8 @@ class Candore:
             extractor.max_pages = max_pages
             extractor.skip_percent = skip_percent
             data = await extractor.extract_all_entities()
+            if hasattr(self.settings, 'rpms'):
+                data.update({'installed_rpms': await extractor.extract_all_rpms()})
 
         if not data:
             click.echo("Entities data is not data found!")
