@@ -21,7 +21,7 @@ class Candore:
     def list_endpoints(self):
         return self.api_lister.lister_endpoints()
 
-    async def save_all_entities(self, mode, output_file, full):
+    async def save_all_entities(self, mode, output_file, full, max_pages=None, skip_percent=None):
         """Save all the entities to a json file
 
         :param mode: Pre or Post
@@ -36,6 +36,8 @@ class Candore:
         async with Extractor(settings=self.settings, apilister=self.api_lister) as extractor:
             if full:
                 extractor.full = True
+            extractor.max_pages = max_pages
+            extractor.skip_percent = skip_percent
             data = await extractor.extract_all_entities()
 
         if not data:

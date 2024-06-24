@@ -1,4 +1,5 @@
 import asyncio  # noqa: F401
+import math
 from functools import cached_property
 
 import aiohttp
@@ -68,9 +69,18 @@ class Extractor:
             page_entities = await self.paged_results(**_request)
             return page_entities
 
-    async def fetch_all_pages(self, total_pages, _request):
+    async def fetch_all_pages(self, total_pages, _request, max_pages=None, skip_percent=None):
+        if max_pages:
+            stop = min(total_pages, max_pages)
+        else:
+            stop = total_pages
+        if skip_percent:
+            step = stop // math.ceil(stop * (100 - skip_percent) / 100)
+        else:
+            step = 1
         tasks = []
-        for page in range(2, total_pages + 1):
+        print(f"Fetching {len(list(range(1, stop, step)))} more page(s).")
+        for page in range(1, stop, step):
             task = asyncio.ensure_future(self.fetch_page(page, _request))
             tasks.append(task)
         responses = await asyncio.gather(*tasks)
@@ -96,15 +106,21 @@ class Extractor:
                     return entity_data
             else:
                 return entity_data
-        # If the entity has multiple pages, fetch them all
-        if self.full:
-            total_pages = results.get("total") // results.get("per_page") + 1
-            if total_pages > 1:
-                print(f"Endpoint {endpoint} has {total_pages} pages.")
+        total_pages = results.get("total") // results.get("per_page") + 1
+        if total_pages > 1:
+            print(f"Endpoint {endpoint} has {total_pages} pages.")
+            # If the entity has multiple pages, fetch them all
+            if self.full:
                 pages_data = await self.fetch_all_pages(total_pages, _request)
-                for page_entities in pages_data:
-                    if page_entities:
-                        entity_data.extend(page_entities)
+            elif self.max_pages or self.skip_percent:
+                pages_data = await self.fetch_all_pages(
+                    total_pages, _request, self.max_pages, self.skip_percent
+                )
+            else:
+                return entity_data
+            for page_entities in pages_data:
+                if page_entities:
+                    entity_data.extend(page_entities)
         return entity_data
 
     async def dependency_ids(self, dependency):
