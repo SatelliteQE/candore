@@ -6,10 +6,10 @@ from urllib.parse import urlparse
 
 class Session:
 
-    def __init__(self):
-        self.settings = candore_settings()
-        self.hostname = urlparse(self.settings.candore.base_url).hostname
-        self.username = self.settings.candore.ssh.username or 'root'
+    def __init__(self, settings=None):
+        self.settings = settings
+        self.hostname = urlparse(settings.candore.base_url).hostname
+        self.username = settings.candore.ssh.username or 'root'
 
     @cached_property
     def auth(self):
