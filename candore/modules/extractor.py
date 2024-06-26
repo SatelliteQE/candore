@@ -192,7 +192,7 @@ class Extractor:
 
     async def extract_all_rpms(self):
         """Extracts all installed RPMs from server"""
-        with Session() as ssh_client:
+        with Session(settings=self.settings) as ssh_client:
             rpms = ssh_client.execute('rpm -qa').stdout
             rpms = rpms.splitlines()
             name_version_pattern = rf'{self.settings.rpms.regex_pattern}'

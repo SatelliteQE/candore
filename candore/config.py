@@ -7,7 +7,7 @@ from dynaconf.validator import Validator
 CURRENT_DIRECTORY = Path().resolve()
 
 
-def candore_settings(option_settings_file=None, option_components_file=None):
+def candore_settings(option_settings_file=None, option_components_file=None, conf_dir=None):
     settings_file = (
         PurePath(option_settings_file)
         if option_settings_file
@@ -18,12 +18,18 @@ def candore_settings(option_settings_file=None, option_components_file=None):
         if option_components_file
         else PurePath(CURRENT_DIRECTORY, "components.yaml")
     )
+    if conf_dir:
+        a_conf_dir = PurePath(conf_dir)
+        if not Path(a_conf_dir).exists():
+            raise OSError(f'The conf directory path {a_conf_dir} does not exists')
+    else:
+        a_conf_dir = PurePath('conf/')
     # Initialize and Configure Settings
     settings = Dynaconf(
         core_loaders=["YAML"],
         envvar_prefix="CANDORE",
         settings_files=[settings_file, components_file],
-        preload=["conf/*.yaml"],
+        preload=[f"{a_conf_dir}/*.yaml"],
         envless_mode=True,
         lowercase_read=True,
     )

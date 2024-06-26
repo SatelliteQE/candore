@@ -16,8 +16,9 @@ from candore.config import candore_settings
 @click.option("--version", is_flag=True, help="Installed version of candore")
 @click.option("--settings-file", "-s", default=None, help="Settings file path")
 @click.option("--components-file", "-c", default=None, help="Components file path")
+@click.option("--conf-dir", default=None, help="Conf directory contain configuration files")
 @click.pass_context
-def candore(ctx, version, settings_file, components_file):
+def candore(ctx, version, settings_file, components_file, conf_dir):
     if version:
         import pkg_resources
 
@@ -25,7 +26,9 @@ def candore(ctx, version, settings_file, components_file):
         click.echo(f"Version: {ver}")
     candore_obj = Candore(
         settings=candore_settings(
-            option_settings_file=settings_file, option_components_file=components_file
+            option_settings_file=settings_file,
+            option_components_file=components_file,
+            conf_dir=conf_dir
         )
     )
     ctx.__dict__["candore"] = candore_obj
