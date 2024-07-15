@@ -11,7 +11,6 @@ from candore.modules.comparator import Comparator
 from candore.modules.extractor import Extractor
 from candore.modules.finder import Finder
 from candore.modules.report import Reporting
-from candore.config import candore_settings
 
 
 class Candore:
@@ -22,7 +21,9 @@ class Candore:
     def list_endpoints(self):
         return self.api_lister.lister_endpoints()
 
-    async def save_all_entities(self, mode, output_file, full, max_pages=None, skip_percent=None):
+    async def save_all_entities(
+        self, mode, output_file, full, max_pages=None, skip_percent=None, resume=None
+    ):
         """Save all the entities to a json file
 
         :param mode: Pre or Post
@@ -39,6 +40,8 @@ class Candore:
                 extractor.full = True
             extractor.max_pages = max_pages
             extractor.skip_percent = skip_percent
+            if resume:
+                extractor.load_resume_info()
             data = await extractor.extract_all_entities()
             if hasattr(self.settings, 'rpms'):
                 data.update({'installed_rpms': await extractor.extract_all_rpms()})
