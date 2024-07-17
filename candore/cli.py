@@ -28,7 +28,7 @@ def candore(ctx, version, settings_file, components_file, conf_dir):
         settings=candore_settings(
             option_settings_file=settings_file,
             option_components_file=components_file,
-            conf_dir=conf_dir
+            conf_dir=conf_dir,
         )
     )
     ctx.__dict__["candore"] = candore_obj
@@ -49,8 +49,9 @@ def apis(ctx):
 @click.option("--full", is_flag=True, help="Extract data from all the pages of a component")
 @click.option("--max-pages", type=int, help="The maximum number of pages to extract per entity")
 @click.option("--skip-percent", type=int, help="The percentage of pages to skip per entity")
+@click.option("--resume", is_flag=True, help="Resume the extraction from the last completed entity")
 @click.pass_context
-def extract(ctx, mode, output, full, max_pages, skip_percent):
+def extract(ctx, mode, output, full, max_pages, skip_percent, resume):
     loop = asyncio.get_event_loop()
     candore_obj = ctx.parent.candore
     loop.run_until_complete(
@@ -60,6 +61,7 @@ def extract(ctx, mode, output, full, max_pages, skip_percent):
             full=full,
             max_pages=max_pages,
             skip_percent=skip_percent,
+            resume=resume,
         )
     )
 
