@@ -3,7 +3,9 @@ A module responsible for calculating expected and skipped variations from
 `conf/variations` yaml file and convert them into processable list
 """
 from functools import cached_property
-from candore.utils import yaml_reader, get_yaml_paths
+
+from candore.utils import get_yaml_paths
+from candore.utils import yaml_reader
 
 
 class Variations:
@@ -19,7 +21,6 @@ class Variations:
     def expected_variations(self):
         yaml_data = self.variations.get("expected_variations") if self.variations else None
         return get_yaml_paths(yaml_data=yaml_data)
-
 
     @cached_property
     def skipped_variations(self):

@@ -132,9 +132,9 @@ class Comparator:
     def compare_all_pres_with_posts(self, pre_data, post_data, unique_key="", var_details=None):
         if unique_key:
             self.big_key.append(unique_key)
-        if isinstance(pre_data, dict):
+        if isinstance(pre_data, dict) and post_data:
             self._is_data_type_dict(pre_data, post_data, unique_key=unique_key)
-        elif isinstance(pre_data, list):
+        elif isinstance(pre_data, list) and post_data:
             self._is_data_type_list(pre_data, post_data, unique_key=unique_key)
         else:
             if pre_data != post_data:

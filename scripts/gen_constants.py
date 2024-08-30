@@ -4,6 +4,7 @@ import sys
 import yaml
 
 KEEP_FIELDS = ["name", "label", "title", "url", "description", "path"]
+SKIP_ENTITIES = ["errata", "package_groups", "repository_sets"]
 SKIP_DICT = {}
 HELP_TEXT = """
 This script processes a comparison report, in the form of a csv file, and outputs a constants file.
@@ -26,6 +27,8 @@ csv.field_size_limit(sys.maxsize)
 
 def filter_parts(parts):
     for check in KEEP_FIELDS:
+        if parts[0] in SKIP_ENTITIES:
+            return
         if check in parts[-1]:
             return True
 

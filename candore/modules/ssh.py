@@ -1,11 +1,10 @@
-from hussh import Connection
 from functools import cached_property
-from candore.config import candore_settings
 from urllib.parse import urlparse
+
+from hussh import Connection
 
 
 class Session:
-
     def __init__(self, settings=None):
         self.settings = settings
         self.hostname = urlparse(settings.candore.base_url).hostname

@@ -80,12 +80,22 @@ class Reporting:
         # Convert json to csv and write to output file
         csv_writer = csv.writer(output_file.open("w"))
         # Table Column Names
-        columns = ["Path", "Pre-Upgrade", "Post-Upgrade", "Variation?" if not inverse else 'Constant?']
+        columns = [
+            "Path",
+            "Pre-Upgrade",
+            "Post-Upgrade",
+            "Variation?" if not inverse else 'Constant?',
+        ]
         csv_writer.writerow(columns)
         # Writing Rows
         for var_path, vals in self.results.items():
-            csv_writer.writerow([
-                var_path, vals["pre"], vals["post"],
-                vals["variation" if not inverse else "constant"]])
+            csv_writer.writerow(
+                [
+                    var_path,
+                    vals["pre"],
+                    vals["post"],
+                    vals["variation" if not inverse else "constant"],
+                ]
+            )
         print("Wrote CSV report to {}".format(output_file))
         print("CSV report contains {} results".format(len(self.results)))

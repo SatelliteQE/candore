@@ -2,7 +2,7 @@
 
 ## Introduction
 
-`Candore` is the command line interface data integrity tool. The tool is build to verify the change made in a product has any impact on data in product.   
+`Candore` is the command line interface data integrity tool. The tool is build to verify the change made in a product has any impact on data in product.
 
 **The change** could be:
 - Upgrade of the product to new version
